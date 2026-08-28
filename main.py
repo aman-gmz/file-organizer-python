@@ -1,24 +1,40 @@
 import os
 import shutil
 
-folder_path ="C:/Users/HP/Downloads"
+folder_path = input("Enter the folder path: ").strip()
+
+if not os.path.exists(folder_path):
+    print("Folder not found!")
+    exit()
 
 files = os.listdir(folder_path)
 
 for file in files:
-    file_lower = file.lower()
     source = os.path.join(folder_path, file)
 
-    if file_lower.endswith(".jpg") or file_lower.endswith(".png"):
-        os.makedirs(folder_path + "/Images", exist_ok=True)
-        shutil.move(source, folder_path + "/Images/" + file)
+    # Skip folders
+    if os.path.isdir(source):
+        continue
 
-    elif file_lower.endswith(".pdf"):
-        os.makedirs(folder_path + "/Documents", exist_ok=True)
-        shutil.move(source, folder_path + "/Documents/" + file)
+    file_lower = file.lower()
 
-    elif file_lower.endswith(".mp4"):
-        os.makedirs(folder_path + "/Videos", exist_ok=True)
-        shutil.move(source, folder_path + "/Videos/" + file)
+    if file_lower.endswith((".jpg", ".jpeg", ".png", ".gif")):
+        folder = "Images"
 
-print("Files organized successfully!")
+    elif file_lower.endswith((".pdf", ".docx", ".doc", ".txt")):
+        folder = "Documents"
+
+    elif file_lower.endswith((".mp4", ".mkv", ".avi", ".mov")):
+        folder = "Videos"
+
+    else:
+        folder = "Others"
+
+    destination_folder = os.path.join(folder_path, folder)
+    os.makedirs(destination_folder, exist_ok=True)
+
+    shutil.move(source, os.path.join(destination_folder, file))
+
+    print(f"Moved: {file} -> {folder}")
+
+print("\nFiles organized successfully!")
